@@ -8,4 +8,9 @@
     <string name="button_cancel">cancelar</string>
     <string name="label_gameid">Game ID:</string>
     <string name="label_rival">Rival:</string>
+    <string name="label_yourturn">Tu turno</string>
+    <string name="label_rivalturn">Turno del rival</string>
+    <string name="label_result_winner">¡Tú ganas!</string>
+    <string name="label_result_looser">¡El rival gana!</string>
+    <string name="label_result_draw">¡Empate!</string>
 </resources>

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +40,14 @@ public class MainActivity extends AppCompatActivity {
             });
 
             onGameStarted(gameid, rivalname, yourturn);
+        });
+
+        // Al recibir un mensaje de error, mostrarlo en un Toast y restaurar los botones
+        GameServer.get().onError((code, msg) -> {
+            this.runOnUiThread(() -> {
+                Toast.makeText(this, "Error " + code + ": " + msg, Toast.LENGTH_SHORT).show();
+                setButtonsPlay();
+            });
         });
     }
 
