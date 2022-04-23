@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">tres-en-linea</string>
+    <string name="label_username">Nombre de usuario:</string>
+    <string name="default_uri">http://192.168.0.192:4500</string>
+    <string name="default_username">player 1</string>
+    <string name="button_play">Jugar</string>
+    <string name="button_play_loading">Emparejando...</string>
+    <string name="button_cancel">cancelar</string>
 </resources>
