@@ -6,4 +6,6 @@
     <string name="button_play">Jugar</string>
     <string name="button_play_loading">Emparejando...</string>
     <string name="button_cancel">cancelar</string>
+    <string name="label_gameid">Game ID:</string>
+    <string name="label_rival">Rival:</string>
 </resources>
