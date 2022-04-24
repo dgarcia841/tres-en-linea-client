@@ -18,8 +18,14 @@ public class GameServer {
     }
 
     private Socket socket;
+    private String gameid;
+    private String username;
 
-    private GameServer() {
+    private GameServer() { }
+
+    public void startGame(String username) {
+        this.username = username;
+        socket.emit("startGame", username);
     }
 
     public GameServer connect(String uri) {
@@ -31,19 +37,14 @@ public class GameServer {
                 onConnect.onConnect(socket);
             }
         });
-        socket.on("onRivalPlay", args -> {
-            Log.d("EVENT", String.valueOf(args));
-            if (onRivalPlay != null) {
-                onRivalPlay.onRivalPlay("", "", 0, 0);
-            }
-        });
         socket.on("onGameStarted", (Object... args) -> {
-            String gameid = (String) args[0];
+            gameid = (String) args[0];
             String rivalname = (String) args[1];
             boolean yourturn = (boolean) args[2];
+            int id = (int) args[3];
 
             if (onGameStarted != null) {
-                onGameStarted.onGameStarted(gameid, rivalname, yourturn);
+                onGameStarted.onGameStarted(gameid, rivalname, yourturn, id);
             }
         });
         socket.on("onError", (Object... args) -> {
@@ -57,8 +58,29 @@ public class GameServer {
             String gameid = (String) args[0];
             String winnername = (String) args[1];
             String result = (String) args[2];
+
+            RESULT rid = RESULT.UNKNOWN;
+            switch(result) {
+                case "victory":
+                    rid = RESULT.VICTORY;
+                    break;
+                case "defeat":
+                    rid = RESULT.DEFEAT;
+                    break;
+                case "draw":
+                    rid = RESULT.DRAW;
+                    break;
+            }
             if(onGameEnded != null) {
-                onGameEnded.onGameEnded(gameid, winnername, result);
+                onGameEnded.onGameEnded(gameid, winnername, rid);
+            }
+        });
+        socket.on("onRivalPlay", (Object... args) -> {
+            String gameid = (String) args[0];
+            int x = (int) args[1];
+            int y = (int) args[2];
+            if(onRivalPlay != null) {
+                onRivalPlay.onRivalPlay(gameid, x, y);
             }
         });
         socket.connect();
@@ -79,7 +101,7 @@ public class GameServer {
 
     // EVENTO RIVAL PLAY
     public interface IOnRivalPlay {
-        void onRivalPlay(String gameid, String rivalname, int x, int y);
+        void onRivalPlay(String gameid, int x, int y);
     }
     private IOnRivalPlay onRivalPlay;
     public GameServer onRivalPlay(IOnRivalPlay event) {
@@ -89,7 +111,7 @@ public class GameServer {
 
     // EVENTO GAME STARTED
     public interface IOnGameStarted {
-        void onGameStarted(String gameid, String rivalname, boolean yourturn);
+        void onGameStarted(String gameid, String rivalname, boolean yourturn, int id);
     }
     private IOnGameStarted onGameStarted;
     public GameServer onGameStarted(IOnGameStarted event) {
@@ -108,13 +130,24 @@ public class GameServer {
     }
 
     // EVENTO GAME END
+    public enum RESULT {
+        VICTORY,
+        DEFEAT,
+        DRAW,
+        UNKNOWN
+    }
     public interface IOnGameEnded {
-        void onGameEnded(String gameid, String winnername, String result);
+        void onGameEnded(String gameid, String winnername, RESULT result);
     }
     private IOnGameEnded onGameEnded;
     public GameServer onGameEnded(IOnGameEnded event) {
         this.onGameEnded = event;
         return this;
+    }
+
+    // HACER JUGADA
+    public void play(int x, int y) {
+        socket.emit("playGame", gameid, username, x, y);
     }
 
 

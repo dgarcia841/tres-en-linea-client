@@ -33,13 +33,13 @@ public class MainActivity extends AppCompatActivity {
         cancel.setOnClickListener(e -> onCancelClicked());
 
         // Al iniciar la partida
-        GameServer.get().onGameStarted((gameid, rivalname, yourturn) -> {
+        GameServer.get().onGameStarted((gameid, rivalname, yourturn, id) -> {
             // restaurar los botones
             this.runOnUiThread(() -> {
                 setButtonsPlay();
             });
 
-            onGameStarted(gameid, rivalname, yourturn);
+            onGameStarted(gameid, rivalname, yourturn, id);
         });
 
         // Al recibir un mensaje de error, mostrarlo en un Toast y restaurar los botones
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
      * @param rivalname nombre del rival
      * @param yourturn ¿Es turno del jugador (true) o del rival (false)?
      */
-    void onGameStarted(String gameid, String rivalname, boolean yourturn) {
+    void onGameStarted(String gameid, String rivalname, boolean yourturn, int id) {
 
         // Crear intent con los datos del juego iniciado
         Intent intent = new Intent(MainActivity.this, GameActivity.class);
@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         data.putString("gameid", gameid);
         data.putString("rivalname", rivalname);
         data.putBoolean("yourturn", yourturn);
+        data.putInt("id", id);
 
         intent.putExtras(data);
 
@@ -93,8 +94,8 @@ public class MainActivity extends AppCompatActivity {
         setButtonsLoading();
 
         // Conectarse al servidor
-        GameServer.get().onConnect((socket) -> {
-            socket.emit("startGame", username);
+        GameServer.get().onConnect((e) -> {
+            GameServer.get().startGame(username);
         }).connect(serverUri);
     }
 
