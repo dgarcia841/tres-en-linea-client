@@ -18,7 +18,7 @@
             android:id="@+id/label_uri"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/default_username" />
+            android:text="@string/label_uri" />
 
         <EditText
             android:id="@+id/tv_uri"

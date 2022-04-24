@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,6 +60,92 @@ public class GameActivity extends AppCompatActivity {
         GameServer.get().onRivalPlay((gameid, x, y) -> onRivalPlay(x, y));
         // cuando el jugador juega
         adapter.onPlay((x, y) -> onPlay(x, y));
+        // Cuando el juego termina en empate
+        GameServer.get().onDraw(() -> onDraw());
+
+        // Cuando alguien gana en el juego
+        GameServer.get().onWin((gameid, winner, result, where, position) -> {
+            onWin(result, where, position);
+        });
+
+        // Cuando el juego reinicia
+        GameServer.get().onGameRestarted((yourturn) -> onGameRestarted(yourturn));
+    }
+
+    void onWin(GameServer.RESULT result, GameServer.WHERE where, int position) {
+        GameActivity.this.runOnUiThread(() -> {
+
+            // marcar en el tablero las celdas ganadoras
+            switch(where) {
+                case ROW:
+                    board.setWinner(0, position);
+                    board.setWinner(1, position);
+                    board.setWinner(2, position);
+                    break;
+                case COLUMN:
+                    board.setWinner(position, 0);
+                    board.setWinner(position, 1);
+                    board.setWinner(position, 2);
+                    break;
+                case DIAGONAL:
+                    if(position == 0) {
+                        board.setWinner(0, 0);
+                        board.setWinner(1, 1);
+                        board.setWinner(2, 2);
+                    }
+                    else {
+                        board.setWinner(2, 0);
+                        board.setWinner(1, 1);
+                        board.setWinner(0, 2);
+                    }
+                    break;
+            }
+
+
+            // seleccionar texto de resultado
+            int rid = -1;
+            switch(result) {
+                case VICTORY:
+                    rid = R.string.label_result_winner;
+                    break;
+                case DEFEAT:
+                    rid = R.string.label_result_looser;
+                    break;
+                case DRAW:
+                    rid = R.string.label_result_draw;
+                    break;
+            }
+            // Mostrar el resultado
+            if(rid != -1)
+                tvResult.setText(rid);
+            tvTurn.setText("");
+            adapter.yourturn = false;
+            adapter.notifyDataSetChanged();
+        });
+    }
+
+    void onGameRestarted(boolean yourturn) {
+        this.runOnUiThread(() -> {
+            tvResult.setText("");
+            this.yourturn = yourturn;
+            adapter.yourturn = yourturn;
+            updateTurn();
+            board.clear();
+            adapter.notifyDataSetChanged();
+        });
+    }
+
+    /**
+     * Ocurre cuando el juego termina en empate
+     */
+    void onDraw() {
+        GameActivity.this.runOnUiThread(() -> {
+            // Mostrar el resultado
+            tvResult.setText(R.string.label_result_draw);
+            tvTurn.setText("");
+            adapter.yourturn = false;
+            adapter.notifyDataSetChanged();
+        });
     }
 
     /**

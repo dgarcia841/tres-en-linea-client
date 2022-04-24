@@ -13,4 +13,5 @@
     <string name="label_result_winner">¡Tú ganas!</string>
     <string name="label_result_looser">¡El rival gana!</string>
     <string name="label_result_draw">¡Empate!</string>
+    <string name="label_uri">URI del servidor:</string>
 </resources>

@@ -83,6 +83,55 @@ public class GameServer {
                 onRivalPlay.onRivalPlay(gameid, x, y);
             }
         });
+        socket.on("onDraw", (Object... args) -> {
+            if(onDraw != null) {
+                onDraw.onDraw();
+            }
+        });
+        socket.on("onWin", (Object... args) -> {
+            String gameid = (String) args[0];
+            String winner = (String) args[1];
+            String resultStr = (String) args[2];
+            String whereStr = (String) args[3];
+            int position = (int) args[4];
+
+            RESULT result = RESULT.UNKNOWN;
+            WHERE where = WHERE.UNKNOWN;
+
+            switch (resultStr) {
+                case "victory":
+                    result = RESULT.VICTORY;
+                    break;
+                case "defeat":
+                    result = RESULT.DEFEAT;
+                    break;
+                case "draw":
+                    result = RESULT.DRAW;
+                    break;
+            }
+            switch (whereStr) {
+                case "row":
+                    where = WHERE.ROW;
+                    break;
+                case "column":
+                    where = WHERE.COLUMN;
+                    break;
+                case "diagonal":
+                    where = WHERE.DIAGONAL;
+                    break;
+            }
+
+            if(onWin != null) {
+                onWin.onWin(gameid, winner, result, where, position);
+            }
+        });
+
+        socket.on("onGameRestarted", (Object... args) -> {
+            boolean yourturn = (boolean) args[0];
+            if(onGameRestarted != null) {
+                onGameRestarted.onGameRestarted(yourturn);
+            }
+        });
         socket.connect();
         return this;
     }
@@ -142,6 +191,42 @@ public class GameServer {
     private IOnGameEnded onGameEnded;
     public GameServer onGameEnded(IOnGameEnded event) {
         this.onGameEnded = event;
+        return this;
+    }
+
+    // EVENTO DRAW (RECIBIR RESULTADO DE EMPATE)
+    public interface IOnDraw {
+        void onDraw();
+    }
+    private IOnDraw onDraw;
+    public GameServer onDraw(IOnDraw event) {
+        onDraw = event;
+        return this;
+    }
+
+    // EVENTO WIN (ALGUIEN GANÓ LA PARTIDA)
+    public enum WHERE {
+        ROW,
+        COLUMN,
+        DIAGONAL,
+        UNKNOWN
+    }
+    public interface IOnWin {
+        void onWin(String gameid, String winner, RESULT result, WHERE where, int position);
+    }
+    private IOnWin onWin;
+    public GameServer onWin(IOnWin event) {
+        onWin = event;
+        return this;
+    }
+
+    // EVENTO RESTART (PARTIDA REINICIADA
+    public interface IOnGameRestarted {
+        void onGameRestarted(boolean yourturn);
+    }
+    private IOnGameRestarted onGameRestarted;
+    public GameServer onGameRestarted(IOnGameRestarted event) {
+        onGameRestarted = event;
         return this;
     }
 

@@ -1,11 +1,11 @@
 package com.dgarcia841.tres_en_linea;
 
-import android.util.Log;
+import static com.dgarcia841.tres_en_linea.R.*;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,7 +45,7 @@ public class GameCellAdapter extends RecyclerView.Adapter<GameCellAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = (View) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.activity_game_cell, parent, false);
+                .inflate(layout.activity_game_cell, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
@@ -85,11 +85,13 @@ public class GameCellAdapter extends RecyclerView.Adapter<GameCellAdapter.ViewHo
          * El botón de la celda
          */
         ImageButton cell;
+        ImageView background;
         // marcas de cada jugador
-        int[] keys = {R.drawable.cancel, R.drawable.circle};
+        int[] keys = {drawable.cancel, drawable.circle};
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             cell = (ImageButton) itemView.findViewById(R.id.bt_cell);
+            background = (ImageView) itemView.findViewById(R.id.iv_background);
         }
 
         /**
@@ -106,7 +108,7 @@ public class GameCellAdapter extends RecyclerView.Adapter<GameCellAdapter.ViewHo
                 default:
                     // Añadir evento para hacer jugada en las celdas vacías
                 case EMPTY:
-                    cell.setImageResource(R.drawable.empty);
+                    cell.setImageResource(drawable.empty);
                     cell.setOnClickListener((e) -> {
                         if(!yourturn) return;
                         if(onPlay != null) {
@@ -120,6 +122,13 @@ public class GameCellAdapter extends RecyclerView.Adapter<GameCellAdapter.ViewHo
                 case RIVAL:
                     cell.setImageResource(keys[1 - id]);
                     break;
+            }
+            // resaltar celda como ganadora
+            if(board.isWinner(x, y)) {
+                background.setBackgroundResource(drawable.selected);
+            }
+            else {
+                background.setBackgroundResource(drawable.empty);
             }
         }
     }
