@@ -55,6 +55,19 @@
             android:layout_height="wrap_content"
             android:text="@string/button_cancel"
             android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/label_leaderboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/label_leaderboard"
+            android:textSize="20sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_leaderboard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

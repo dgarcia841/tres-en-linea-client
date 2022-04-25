@@ -1,9 +1,12 @@
 package com.dgarcia841.tres_en_linea;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +20,9 @@ public class MainActivity extends AppCompatActivity {
     Button play;
     Button cancel;
 
+    RecyclerView rvLeaderboard;
+    LeaderboardAdapter leaderboardAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         inputUser = (EditText) findViewById(R.id.tv_username);
         play = (Button) findViewById(R.id.bt_play);
         cancel = (Button) findViewById((R.id.bt_cancel));
+        rvLeaderboard = (RecyclerView) findViewById(R.id.rv_leaderboard);
 
         // Configurar eventos
         play.setOnClickListener(e -> onPlayClicked());
@@ -47,6 +54,21 @@ public class MainActivity extends AppCompatActivity {
             this.runOnUiThread(() -> {
                 Toast.makeText(this, "Error " + code + ": " + msg, Toast.LENGTH_SHORT).show();
                 setButtonsPlay();
+            });
+        });
+
+        LinearLayoutManager layout = new LinearLayoutManager(this);
+        leaderboardAdapter = new LeaderboardAdapter(new GameServer.IPlayer[0]);
+
+        rvLeaderboard.setAdapter(leaderboardAdapter);
+        rvLeaderboard.setLayoutManager(layout);
+
+        // Al actualizarse el leaderboard
+        GameServer.get().onLeaderboard((board) -> {
+            this.runOnUiThread(() -> {
+                Log.d("COUNT #1: ", String.valueOf(board.length));
+                leaderboardAdapter.board = board;
+                leaderboardAdapter.notifyDataSetChanged();
             });
         });
     }

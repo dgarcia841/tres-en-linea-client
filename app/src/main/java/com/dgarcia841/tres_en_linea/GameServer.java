@@ -1,7 +1,9 @@
 package com.dgarcia841.tres_en_linea;
 import android.util.Log;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -36,6 +38,7 @@ public class GameServer {
             if (onConnect != null) {
                 onConnect.onConnect(socket);
             }
+            socket.emit("subscribeToLeaderboard");
         });
         socket.on("onGameStarted", (Object... args) -> {
             gameid = (String) args[0];
@@ -137,6 +140,29 @@ public class GameServer {
             int rivalscore = (int) args[1];
             if(onScore != null) {
                 onScore.onScore(score, rivalscore);
+            }
+        });
+
+        socket.on("onLeaderboard", (Object... args) -> {
+            String objstr = (String) args[0];
+            Log.d("LEADERBOARD: ", objstr);
+            String[] players = objstr.split("\\/");
+            IPlayer[] board = new IPlayer[players.length];
+            for(int i = 0; i < players.length; i++) {
+                Log.d("LEADERBOARD ROW: ", players[i]);
+                String[] pair = players[i].split("=");
+                String u = pair[0];
+                try {
+                    u = java.net.URLDecoder.decode(u, StandardCharsets.UTF_8.name());
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                Log.d("LEADERBOARD U: ", u);
+                int s = pair.length == 2 ? Integer.parseInt(pair[1]): 0;
+                board[i] = new IPlayer(u, s);
+            }
+            if(onLeaderboard != null) {
+                onLeaderboard.onLeaderboard(board);
             }
         });
         socket.connect();
@@ -244,6 +270,24 @@ public class GameServer {
     private IOnScore onScore;
     public GameServer onScore(IOnScore event) {
         onScore = event;
+        return this;
+    }
+
+    // EVENTO ON LEADERBOARD (LEADERBOARD ACTUALIZADA)
+    public class IPlayer {
+        public String username;
+        public int score;
+        public IPlayer(String u, int s) {
+            username = u;
+            score = s;
+        }
+    }
+    public interface IOnLeaderboard {
+        void onLeaderboard(IPlayer[] leaderboard);
+    }
+    private IOnLeaderboard onLeaderboard;
+    public GameServer onLeaderboard(IOnLeaderboard event) {
+        onLeaderboard = event;
         return this;
     }
 
