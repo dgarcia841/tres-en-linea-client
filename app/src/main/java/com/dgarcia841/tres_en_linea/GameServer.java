@@ -132,6 +132,13 @@ public class GameServer {
                 onGameRestarted.onGameRestarted(yourturn);
             }
         });
+        socket.on("onScore", (Object ...args) -> {
+            int score = (int) args[0];
+            int rivalscore = (int) args[1];
+            if(onScore != null) {
+                onScore.onScore(score, rivalscore);
+            }
+        });
         socket.connect();
         return this;
     }
@@ -227,6 +234,16 @@ public class GameServer {
     private IOnGameRestarted onGameRestarted;
     public GameServer onGameRestarted(IOnGameRestarted event) {
         onGameRestarted = event;
+        return this;
+    }
+
+    // EVENTO ON SCORE (RECIBIR CAMBIO DE PUNTOS)
+    public interface IOnScore {
+        void onScore(int score, int rivalscore);
+    }
+    private IOnScore onScore;
+    public GameServer onScore(IOnScore event) {
+        onScore = event;
         return this;
     }
 

@@ -18,6 +18,8 @@ public class GameActivity extends AppCompatActivity {
     TextView tvRival;
     TextView tvTurn;
     TextView tvResult;
+    TextView tvScore;
+    TextView tvRivalScore;
 
     boolean yourturn;
 
@@ -34,6 +36,9 @@ public class GameActivity extends AppCompatActivity {
         tvRival = (TextView) findViewById(R.id.tv_rival);
         tvTurn = (TextView) findViewById(R.id.tv_turn);
         tvResult = (TextView) findViewById(R.id.tv_result);
+
+        tvScore = (TextView) findViewById(R.id.tv_yourscore);
+        tvRivalScore = (TextView) findViewById(R.id.tv_rivalscore);
 
         // Obtener datos del juego
         Bundle data = getIntent().getExtras();
@@ -70,6 +75,16 @@ public class GameActivity extends AppCompatActivity {
 
         // Cuando el juego reinicia
         GameServer.get().onGameRestarted((yourturn) -> onGameRestarted(yourturn));
+
+        // Cuando alguien puntúa
+        GameServer.get().onScore((score, rivalscore) -> onScore(score, rivalscore));
+    }
+
+    void onScore(int score, int rivalscore) {
+        this.runOnUiThread(() -> {
+            tvScore.setText(String.valueOf(score));
+            tvRivalScore.setText(String.valueOf(rivalscore));
+        });
     }
 
     void onWin(GameServer.RESULT result, GameServer.WHERE where, int position) {
