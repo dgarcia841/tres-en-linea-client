@@ -43,6 +43,23 @@
             android:inputType="textPersonName"
             android:text="player 1" />
 
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RadioButton
+                android:id="@+id/rb_pvp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_pvp" />
+
+            <RadioButton
+                android:id="@+id/rb_ia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_ia" />
+        </RadioGroup>
+
         <Button
             android:id="@+id/bt_play"
             android:layout_width="match_parent"

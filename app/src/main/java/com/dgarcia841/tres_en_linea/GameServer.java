@@ -25,9 +25,14 @@ public class GameServer {
 
     private GameServer() { }
 
-    public void startGame(String username) {
+    public enum GAMEMODE {
+        pvp,
+        ia
+    }
+    public void startGame(String username, GAMEMODE gamemode) {
         this.username = username;
-        socket.emit("startGame", username);
+        int mode = gamemode == GAMEMODE.pvp ? 0: 1;
+        socket.emit("startGame", username, mode, "");
     }
 
     public GameServer connect(String uri) {

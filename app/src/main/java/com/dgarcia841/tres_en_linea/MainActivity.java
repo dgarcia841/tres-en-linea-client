@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,6 +20,9 @@ public class MainActivity extends AppCompatActivity {
     EditText inputUser;
     Button play;
     Button cancel;
+
+    RadioButton rbPvp;
+    RadioButton rbIa;
 
     RecyclerView rvLeaderboard;
     LeaderboardAdapter leaderboardAdapter;
@@ -34,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
         play = (Button) findViewById(R.id.bt_play);
         cancel = (Button) findViewById((R.id.bt_cancel));
         rvLeaderboard = (RecyclerView) findViewById(R.id.rv_leaderboard);
+        rbPvp = (RadioButton) findViewById(R.id.rb_pvp);
+        rbIa = (RadioButton) findViewById(R.id.rb_ia);
 
         // Configurar eventos
         play.setOnClickListener(e -> onPlayClicked());
@@ -112,12 +118,15 @@ public class MainActivity extends AppCompatActivity {
         // Obtener datos de conexión (URI del servidor y nombre de usuario)
         final String serverUri = inputUri.getText().toString();
         final String username = inputUser.getText().toString();
-
+        final boolean checkedPvp = rbPvp.isChecked();
+        final boolean checkedIa = rbIa.isChecked();
         setButtonsLoading();
+
+        final GameServer.GAMEMODE gm = checkedPvp ? GameServer.GAMEMODE.pvp: GameServer.GAMEMODE.ia;
 
         // Conectarse al servidor
         GameServer.get().onConnect((e) -> {
-            GameServer.get().startGame(username);
+            GameServer.get().startGame(username, gm);
         }).connect(serverUri);
     }
 

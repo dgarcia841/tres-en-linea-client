@@ -15,4 +15,6 @@
     <string name="label_result_draw">¡Empate!</string>
     <string name="label_uri">URI del servidor:</string>
     <string name="label_leaderboard">Tabla de clasificación</string>
+    <string name="label_pvp">Contra otro jugador</string>
+    <string name="label_ia">Contra la máquina</string>
 </resources>
