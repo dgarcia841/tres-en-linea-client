@@ -238,8 +238,8 @@ public class GameActivity extends AppCompatActivity {
      * Disconnect client on activity pause
      */
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         finish();
         GameServer.get().getSocket().disconnect();
     }
